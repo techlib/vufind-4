@@ -1,0 +1,58 @@
+/**
+ * Custom Collection via 910 indexing script
+ *
+ * @author Milan Janíček
+ */
+
+
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField; 
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.VariableField;
+
+org.solrmarc.index.SolrIndexer indexer = null;
+
+
+/**
+ * Select collection according 910 filed (can be multiplied).
+ */
+
+
+public Set getCollections(Record record) {
+  LinkedHashSet result = new LinkedHashSet();
+  String sigla;
+
+  List list910  = record.getVariableFields("910");
+
+  /* set:
+   *  NTK for $$910a eq ABA013
+   *  VSCHT for $$910a eq ABD025
+   *  NTK in other cases  (?)
+   */ 
+
+  for (VariableField vf : list910) {
+    DataField df = (DataField) vf;
+
+    // Pridana podminka pro neprazdnost MARC pole 910 s kodem sbirky.
+    // Nektere zaznamy jinak neprochazi.
+    if(df.getSubfield('a') != null) {
+      sigla = df.getSubfield('a').getData().toUpperCase();
+      switch (sigla) {
+        /* It should be also possible to use sigla as id in SOLR... */
+        case "ABA013" : result.add("NTK"); 
+                        break;
+        case "ABD025" : result.add("VSCHT");
+                        break;
+	case "ABB041" : result.add("UOCHB");
+			break;
+        default:	     result.add("NTK");
+      }
+    }
+  }
+
+  if (result.isEmpty()) {
+    return null;
+  }
+
+  return result;
+}

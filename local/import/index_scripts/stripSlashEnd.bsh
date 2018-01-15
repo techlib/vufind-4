@@ -1,0 +1,130 @@
+//package org.solrmarc.tools;
+
+//import org.apache.log4j.Logger;
+//import org.marc4j.*;
+//import org.marc4j.marc.*;
+
+//import java.io.ByteArrayOutputStream;
+//import java.io.UnsupportedEncodingException;
+//import java.util.*;
+//import java.util.regex.Matcher;
+//import java.util.regex.Pattern;
+
+import org.marc4j.marc.Record;
+import org.marc4j.marc.DataField;
+
+/**
+ * Get the title (245ab) from a record
+ * @param record - the marc record object
+ * @return 245a and 245b values concatenated, without last
+ *		 character of slash and without ending whitespace.
+ *        	 Null returned if no title can be found.
+ *
+ * Author: Daniel Mareček
+ */
+
+public String stripSlashEnd(Record record)
+{
+    DataField titleField = (DataField) record.getVariableField("245");
+    if (titleField == null)
+        return "";
+
+    String title;
+
+         if (titleField.getSubfield('a') != null ) {
+              
+		title = titleField.getSubfield('a').getData().toString();
+         
+	 	if (titleField.getSubfield('b') != null ) {
+			title = title.concat(" "); // delici mezera mezi nazvem a podnazvem
+	                title = title.concat(titleField.getSubfield('b').getData().toString());
+        	}
+	
+
+		delka = title.length();
+    
+		// je posledni znak '/' lomitko ?
+		if ( (delka-1) == (title.indexOf('/', delka-1))) {
+			title = title.substring(0, title.length()-1); // orizni lomitko
+			title = title.trim(); // odstrani mezeru na konci retezce
+		}
+
+		return title;
+	}else{
+
+		return "";
+
+	}
+}
+
+
+/**
+ * zpracuje podpole 245b - podnazev
+ * orizne koncove lomitko, je-li tam, a potom koncovou mezeru
+ */
+
+public String stripSlashEndB(Record record)
+{
+    DataField titleField = (DataField) record.getVariableField("245");
+    if (titleField == null)
+        return "";
+
+    String title;
+
+
+         if (titleField.getSubfield('b') != null ) {
+                title = titleField.getSubfield('b').getData().toString();
+         
+    		delka = title.length();
+
+    		// je posledni znak '/' lomitko ?
+        	if ( (delka-1) == (title.indexOf('/', delka-1))) {
+                	title = title.substring(0, title.length()-1); // orizni lomitko
+	                title = title.trim(); // odstrani mezeru na konci retezce
+        	}
+    		
+	return title;
+	
+	}else{
+	
+	return "";
+	
+	}
+}
+
+
+/**
+ * zpracuje podpole 245a - short title
+ * orizne koncove lomitko, je-li tam, a potom koncovou mezeru
+ */
+
+public String stripSlashEndA(Record record)
+{
+    DataField titleField = (DataField) record.getVariableField("245");
+    if (titleField == null)
+        return "";
+
+    String title;
+
+
+         if (titleField.getSubfield('a') != null ) {
+                title = titleField.getSubfield('a').getData().toString();
+         
+    		delka = title.length();
+
+    		// je posledni znak '/' lomitko ?
+        	if ( (delka-1) == (title.indexOf('/', delka-1))) {
+                	title = title.substring(0, title.length()-1); // orizni lomitko
+	                title = title.trim(); // odstrani mezeru na konci retezce
+        	}
+    		
+	return title;
+	
+	}else{
+	
+	return "";
+	
+	}
+}
+
+
