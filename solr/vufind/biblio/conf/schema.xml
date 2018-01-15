@@ -151,6 +151,8 @@
    <field name="article_issn" type="isn" indexed="true" stored="true" multiValued="true"/>
    <field name="article_resource_related" type="string" indexed="true" stored="true" multiValued="true" />
    <field name="signature-old" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="psh_facet"   type="textFacet" indexed="true" stored="true" multiValued="true"/>
+   <field name="psh_english"   type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <!--atalog Specific Fields -->
    <field name="lccn" type="string" indexed="true" stored="true"/>
    <field name="ctrlnum" type="string" indexed="true" stored="true" multiValued="true"/>
