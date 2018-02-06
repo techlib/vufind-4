@@ -38,7 +38,7 @@
 namespace ntk_module\ILS\Driver;
 use VuFind\ILS\Driver\Aleph as AlephBase, VuFind\Exception\ILS as ILSException;
 
-require_once '/var/www/vufind/aleph_tab/AlephTables.php';
+require_once 'AlephTables.php';
 
 /**
  * Aleph Translator Class
