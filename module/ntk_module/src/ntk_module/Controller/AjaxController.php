@@ -1,73 +1,9 @@
 <?php
-/**
- * Ajax Controller Module
- *
- * PHP version 5
- *
- * Copyright (C) Villanova University 2010.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * @category VuFind
- * @package  Controller
- * @author   Chris Hallberg <challber@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
- */
+
 namespace ntk_module\Controller;
-use VuFind\Controller\AjaxController as AjaxControllerBase;
 
-/**
- * This controller handles global AJAX functionality
- *
- * @category VuFind
- * @package  Controller
- * @author   Chris Hallberg <challber@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
- */
-class AjaxController extends AjaxControllerBase
+class AjaxController extends \VuFind\Controller\AjaxController
 {
-   /**
-     * Get the contents of a lightbox; note that unlike most methods, this
-     * one actually returns HTML rather than JSON.
-     *
-     * @return mixed
-     */
-    protected function getLightboxAjax()
-    {
-        // Turn layouts on for this action since we want to render the
-        // page inside a lightbox:
-        $this->layout()->setTemplate('layout/lightbox');
-
-        // Call the requested action:
-        return $this->forwardTo(
-            $this->params()->fromQuery('submodule'),
-            $this->params()->fromQuery('subaction')
-        );
-    }
- 
-    /**
-     * Support method for getItemStatuses() -- when presented with multiple values,
-     * pick which one(s) to send back via AJAX.
-     *
-     * @param array  $list Array of values to choose from.
-     * @param string $mode config.ini setting -- first, all or msg
-     * @param string $msg  Message to display if $mode == "msg"
-     *
-     * @return string
-     */
     protected function pickValue($list, $mode, $msg)
     {
         // Make sure array contains only unique values:
@@ -105,21 +41,6 @@ class AjaxController extends AjaxControllerBase
         }
     }
 
-    /**
-     * Support method for getItemStatuses() -- process a single bibliographic record
-     * for location settings other than "group".
-     *
-     * @param array  $record            Information on items linked to a single bib
-     *                                  record
-     * @param array  $messages          Custom status HTML
-     *                                  (keys = available/unavailable)
-     * @param string $locationSetting   The location mode setting used for
-     *                                  pickValue()
-     * @param string $callnumberSetting The callnumber mode setting used for
-     *                                  pickValue()
-     *
-     * @return array                    Summarized availability information
-     */
     protected function getItemStatus($record, $messages, $locationSetting,
         $callnumberSetting
     ) {
@@ -159,10 +80,10 @@ class AjaxController extends AjaxControllerBase
         elseif($collection_code == 200){
             /* Destnik, Kindle */
             $location = $this->translate("Central Desk, 2nd floor");
-		}
-		elseif($collection_code == 201){
-			$location = $this->translate("Knowledge Navigation Corner, 2nd floor");
-		}
+        }
+        elseif($collection_code == 201){
+            $location = $this->translate("Knowledge Navigation Corner, 2nd floor");
+        }
         elseif(($collection_code > 100 && $collection_code < 1000) || ($collection_code == "UCT departments")){
             /* Pripad pro VSCHT ustavy, Aleph posila v location cisla v rozmezi 100 az 1000. */
             $location = $this->translate("UCT departments");
@@ -196,7 +117,7 @@ class AjaxController extends AjaxControllerBase
             $location = $this->translate("Book news, 4th floor"); // novinky 4. NP
         }
         else{
-	        $location = $this->translate("Unknown");
+            $location = $this->translate("Unknown");
         }
 
         $availability_message = $use_unknown_status
@@ -220,3 +141,4 @@ class AjaxController extends AjaxControllerBase
         );
     }
 }
+
