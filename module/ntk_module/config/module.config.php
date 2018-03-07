@@ -12,6 +12,13 @@ return array (
           'aleph' => 'ntk_module\\ILS\\Driver\\Factory::getAleph',
         ),
       ),
+      'content_covers' => 
+      array (
+        'invokables' => 
+        array (
+          'alephimagecovers' => 'ntk_module\\Content\\Covers\\AlephImageCovers',
+        ),
+      ),
     ),
   ),
   'controllers' => 
