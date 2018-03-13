@@ -26,6 +26,7 @@ return array (
     'factories' => 
     array (
       'ajax' => 'ntk_module\\Controller\\Factory::getAjaxController',
+      'my-research' => 'ntk_module\\Controller\\Factory::getMyResearchController',
     ),
   ),
 );

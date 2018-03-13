@@ -20,6 +20,15 @@ class Factory
         );
     }
 
+    public static function getMyResearchController(\Zend\ServiceManager\ServiceManager $sm)
+    {
+        return new \ntk_module\Controller\MyResearchController(
+            $sm->getServiceLocator(),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
+    }
+
+
 
 }
 
