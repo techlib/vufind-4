@@ -29,9 +29,10 @@
 ?>
 <? $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <? if ($this->searchType == 'advanced'): ?>
-  <div class="navbar-form navbar-left flip">
+  <div>
     <? $tabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs']]); ?>
     <? if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><? endif; ?>
+      <br><br>
       <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
       <p class="adv_search_links">
         <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a> |
@@ -41,22 +42,42 @@
     <? if (!empty($tabs)): ?></div><? endif; ?>
   </div>
 <? else: ?>
-  <form id="searchForm" class="searchForm navbar-form navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
+  <form id="searchForm" class="search form-table navbar-left flip" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" autocomplete="off">
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs']]); ?>
     <? $placeholder = $this->searchbox()->getPlaceholderText(isset($searchTabs['selected']['id']) ? $searchTabs['selected']['id'] : null); ?>
-    <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<? if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<? endif ?> />
-    <? if ($handlerCount > 1): ?>
-      <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false">
-        <? foreach ($handlers as $handler): ?>
-          <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
-        <? endforeach; ?>
-      </select>
-    <? elseif ($handlerCount == 1): ?>
-      <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" />
-    <? endif; ?>
-    <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> <?=$this->transEsc("Find")?></button>
+    <div class="form-group" id="autoCompleteContainer">
+        <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<? if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<? endif ?> />
+    </div>
+    <div class="form-group" id="search-select">
+        <? if ($handlerCount > 1): ?>
+          <select id="searchForm_type" class="searchForm_type form-control" name="type" data-native-menu="false">
+            <? foreach ($handlers as $handler): ?>
+              <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
+            <? endforeach; ?>
+          </select>
+        <? elseif ($handlerCount == 1): ?>
+          <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" />
+        <? endif; ?>
+    </div>
+    <div class="form-group cell-minimal">
+        <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> <?=$this->transEsc("Find")?></button>
+    </div>
     <? if ($advSearch): ?>
-      <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" class="btn btn-link" rel="nofollow"><?=$this->transEsc("Advanced")?></a>
+        <? if (preg_match("/_ga/i", $_SERVER["REQUEST_URI"])) {
+            $request_uri = preg_replace('/\?_ga.*/i', '', $_SERVER["REQUEST_URI"]);
+        } else {
+            $request_uri = $_SERVER["REQUEST_URI"];
+        } ?>
+        <!-- odkaz na domovske strance   -->
+        <?if (($request_uri == $this->url('home')) || ($request_uri == $this->url('home').'Search/Home') || ($request_uri == $this->url('home').'Summon/Home')): ?>
+            <div class="form-group cell-minimal">
+                <a class="btn btn-link" href="<?=$this->url($advSearch)?>"><?=$this->transEsc("Advanced Search")?></a>
+            </div>
+        <? else: ?>
+        <!-- odkaz vsude jinde   -->
+            <div class="search-links">
+                <a href="<?=$this->url($advSearch) . ((isset($this->searchId) && $this->searchId) ? '?edit=' . $this->escapeHtmlAttr($this->searchId) : $hiddenFilterParams) ?>" rel="nofollow"><?=$this->transEsc("Advanced Search")?></a>
+        <? endif; ?>
     <? endif; ?>
     <? if ($geoUrl = $this->geocoords()->getSearchUrl($options)) : ?>
         <a href="<?=$geoUrl ?>" class="btn btn-link"><?=$this->transEsc('Geographic Search')?></a>
@@ -104,6 +125,14 @@
         <input type="hidden" name="hiddenFilters[]" value="<?=$this->escapeHtmlAttr($key) . ':' . $this->escapeHtmlAttr($value)?>" />
       <? endforeach; ?>
     <? endforeach; ?>
+    <? if ($advSearch): ?>
+        <!-- odkaz na domovske strance   -->
+        <?if (($request_uri == $this->url('home')) || ($request_uri == $this->url('home').'Search/Home') || ($request_uri == $this->url('home').'Summon/Home')): ?>
+        <? else: ?>
+        <!-- odkaz vsude jinde   -->
+            </div>
+        <? endif; ?>
+    <? endif; ?>
     <?
       /* Show hidden field for active search class when in combined handler mode. */
       if ($this->searchbox()->combinedHandlersActive()) {
