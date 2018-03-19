@@ -1,0 +1,49 @@
+span.blue-status{
+    color: #01a3b8;
+}
+
+span.available-status {
+    color: #6ad500;
+    font-weight: 600;
+}
+
+.alert-info {
+    color: #3a87ad;
+    background-color: #ededed;
+    border-color: #ededed;
+}
+
+.author_title {
+    margin-left: 20px;
+}
+
+#loading{
+    content:url("../images/ajax_loader.gif");
+    width: 200px;
+    z-index: 1000;
+}
+
+.holdings-filters{
+	height:40px;
+}
+.filter-select{
+	padding:0px;
+	height:28px;
+	padding-bottom:3px;
+}
+.broader_psh, .narrower_psh, .seealso_psh {
+    display: block;
+    margin: .5em 0;
+    padding: 2px 2px 2px 20px;
+    background: url("../images/big_sprite.png") no-repeat;
+}
+.narrower_psh{
+    background-position: -7px -4px;
+}
+.broader_psh{
+    background-position: -7px -62px;
+}
+.seealso_psh{
+    background-position: -7px -118px;
+}
+
