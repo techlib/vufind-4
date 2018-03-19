@@ -1,0 +1,72 @@
+<div class="row">
+  <div class="col-xs-12">
+    <ul role="navigation" class="nav nav-footer">
+      <li><span class="nav-title"><?=$this->transEsc('Search Options')?></span>
+        <ul>
+          <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
+          <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+          <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+	</ul>
+      </li>
+
+      <li><span class="nav-title"><?=$this->transEsc('Find More')?></span>
+		<ul>
+		<?if ($this->layout()->userLang === 'cs'):?>
+			<li><a href="https://www.techlib.cz/cs/83165-nove-knihy"><?=$this->transEsc('New Items')?></a></li>
+			<li><a href="https://www.techlib.cz/cs/2792-e-zdroje"><?=$this->transEsc('Electronic Resources')?></a></li>
+			<li><a href="http://tech.jib.cz/oborova-brana-technika-tech-uvod?set_language=cs"><?=$this->transEsc('jib')?></a></li>
+		<? else: ?>
+			<li><a href="https://www.techlib.cz/en/83166-new-books"><?=$this->transEsc('New Items')?></a></li>
+			<li><a href="https://www.techlib.cz/en/2883-eresources"><?=$this->transEsc('Electronic Resources')?></a></li>
+			<li><a href="http://tech.jib.cz/tech-2013-main-page?set_language=en"><?=$this->transEsc('jib')?></a></li>
+		<? endif; ?>
+        </ul>
+      </li>
+
+      <li><span class="nav-title"><?=$this->transEsc('Need Help?')?></span>
+        <ul>
+          <li><a href="<?=$this->url('help-home')?>?topic=search" data-lightbox class="help-link" data-lightbox-title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Search Tips')?></a></li>
+          <?if ($this->layout()->userLang === 'cs'):?>
+            <li><a href="https://www.techlib.cz/cs/2832-nasi-specialiste"><?=$this->transEsc('Ask a Librarian')?></a></li>
+            <li><a href="https://www.techlib.cz/cs/2884-navody"><?=$this->transEsc('FAQs')?></a></li>
+          <? else: ?>
+            <li><a href="https://www.techlib.cz/en/2718-our-specialists"><?=$this->transEsc('Ask a Librarian')?></a></li>
+            <li><a href="https://www.techlib.cz/en/2862-tech-guides"><?=$this->transEsc('FAQs')?></a></li>
+          <? endif; ?>
+        </ul>
+      </li>
+
+      <li><span class="nav-title"><?=$this->transEsc('In collaboration with')?></span>
+		<ul>
+		<li><a href="http://www.obalkyknih.cz/" title="Obálky knih"><?=$this->transEsc('Obálky knih')?></a></li>
+		<?if ($this->layout()->userLang === 'cs'):?>
+		  <li><a href="https://www.knihovny.cz/?lng=cs"><?=$this->transEsc('Knihovny.cz')?></a></li>
+		  <li><a href="http://www.ptejteseknihovny.cz/"><?=$this->transEsc('Ask Your Library Portal')?></a></li>
+		<? else: ?>
+			<li><a href="https://www.knihovny.cz/?lng=en"><?=$this->transEsc('Knihovny.cz')?></a></li>
+			<li><a href="http://www.ptejteseknihovny.cz/english"><?=$this->transEsc('Ask Your Library Portal')?></a></li>
+		<? endif; ?>
+        </ul>
+      </li>
+
+    </ul>
+
+    <div class="footer-info">
+      <i title="Piktogram NTK" class="ntk-pictogram pull-left"></i>
+      <p class="pull-left">
+        Technická 6/2710, 160 80 Praha 6 - Dejvická<br>
+        <a href="mailto:info@techlib.cz">info@techlib.cz</a>, tel.: 232 002 535
+      </p>
+      <p class="pull-right">
+	<?if ($this->layout()->userLang === 'cs'):?>
+         <a href="https://www.techlib.cz/cs/82763"><?=$this->transEsc('Privacy')?></a>
+         <a href="http://www.techlib.cz/cs/2690-pristupy-a-opravneni"><?=$this->transEsc('Access & Privileges')?></a>
+        <? else: ?>
+         <a href="http://www.techlib.cz/en/82764-privacy"><?=$this->transEsc('Privacy')?></a>
+         <a href="http://www.techlib.cz/en/2812-access-privileges"><?=$this->transEsc('Access & Privileges')?></a>
+        <? endif; ?>
+        Copyright &copy; 2006 - 2016
+      </p>
+    </div>
+  </div>
+</div>
