@@ -46,7 +46,7 @@
     <?= $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs']]); ?>
     <? $placeholder = $this->searchbox()->getPlaceholderText(isset($searchTabs['selected']['id']) ? $searchTabs['selected']['id'] : null); ?>
     <div class="form-group" id="autoCompleteContainer">
-        <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<? if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>"<? endif ?> />
+        <input id="searchForm_lookfor" class="searchForm_lookfor form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"<? if ($placeholder): ?> placeholder="<?=$this->transEsc($placeholder) ?>" <? else: ?> placeholder="<?=$this->transEsc('integrated_search')?>" <? endif ?> />
     </div>
     <div class="form-group" id="search-select">
         <? if ($handlerCount > 1): ?>
