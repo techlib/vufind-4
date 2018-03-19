@@ -141,33 +141,36 @@ JS;
     </header>
     <nav class="breadcrumbs">
       <div class="container">
-        <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
-          && !empty($this->layout()->breadcrumbs)
-          && $this->layout()->breadcrumbs !== false
-        ): ?>
-          <ul class="breadcrumb hidden-print">
-            <? if(is_array($this->layout()->breadcrumbs)): ?>
-              <? if(count($this->layout()->breadcrumbs) > 1): ?>
-                <?=$this->render('breadcrumbs/multi.phtml', [
-                    'parents' => $this->layout()->breadcrumbs,
-                    'title'   => $this->layout()->title,
-                    'from'    => $this->layout()->from
-                  ]) ?>
-              <? else: ?>
-                <?=$this->render('breadcrumbs/default.phtml', [
-                    'parents' => $this->layout()->breadcrumbs,
-                    'title'   => $this->layout()->title
-                  ]) ?>
-              <? endif; ?>
-            <? else: ?>
-              <?=$this->layout()->breadcrumbs ?>
-            <? endif; ?>
-          </ul>
-        <? endif; ?>
       </div>
     </nav>
     <div role="main" class="main">
       <div id="content" class="container">
+        <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+          && !empty($this->layout()->breadcrumbs)
+          && $this->layout()->breadcrumbs !== false
+        ): ?>
+            <div class="breadcrumb-panel">
+              <ol class="breadcrumb hidden-print">
+                <? if(is_array($this->layout()->breadcrumbs)): ?>
+                  <? if(count($this->layout()->breadcrumbs) > 1): ?>
+                    <?=$this->render('breadcrumbs/multi.phtml', [
+                        'parents' => $this->layout()->breadcrumbs,
+                        'title'   => $this->layout()->title,
+                        'from'    => $this->layout()->from
+                      ]) ?>
+                  <? else: ?>
+                    <?=$this->render('breadcrumbs/default.phtml', [
+                        'parents' => $this->layout()->breadcrumbs,
+                        'title'   => $this->layout()->title
+                      ]) ?>
+                  <? endif; ?>
+                <? else: ?>
+                  <li><a href=<?=$this->url('home')?>><?=$this->transEsc('Home')?></a></li>
+                  <?=$this->layout()->breadcrumbs ?>
+                <? endif; ?>
+              </ol>
+            </div>
+        <? endif; ?>
         <?=$this->layout()->content ?>
       </div>
     </div>
