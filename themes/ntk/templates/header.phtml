@@ -1,0 +1,98 @@
+<? $account = $this->auth()->getManager(); ?>
+<div class="l-header">
+    <div class="container">
+    <div class="row">
+            <?if ($this->layout()->userLang === 'cs'):?>
+                <? $url_web = 'https://techlib.cz/cs/';?>
+            <? else: ?>
+                <? $url_web = 'https://techlib.cz/en/';?>
+            <? endif; ?>
+            <?
+                if (preg_match("/_ga/i", $_SERVER["REQUEST_URI"])) {
+                    $request_uri = preg_replace('/\?_ga.*/i', '', $_SERVER["REQUEST_URI"]);
+                } else {
+                    $request_uri = $_SERVER["REQUEST_URI"];
+                }
+            ?>
+<!--            odkaz na domovske strance   -->
+            <?if (($request_uri == $this->url('home')) || ($request_uri == $this->url('home').'Search/Home') || ($request_uri == $this->url('home').'Summon/Home') || ($request_uri == $this->url('home').'MyResearch/Logout')): ?>
+	            <div class="col-xs-7">
+                    <a class="logo" href=<?=$url_web?>>
+		                <img src="/themes/ntk/images/logo-ntk.png" alt="Národní Technická knihovna" title="Národní Technická knihovna">
+		            </a>
+					<a class="logo-secondary" href="http://www.vscht.cz/"><img src="/themes/ntk/images/logoVSCHT_stred_short.png" alt="VŠCHT" height="76px" title="VŠCHT"></a>
+                    <a class="logo-secondary" href="http://www.uochb.cz/" style="margin-top:62px;margin-bottom:0px;margin-left:25px"><img src="/themes/ntk/images/new_logo_uochb.png" alt="ÚOCHB" height="58px" title="ÚOCHB"></a>
+				</div>
+            <? else: ?>
+<!--            odkaz vsude jinde   -->
+            	<div class="col-xs-4">
+                    <a class="logo" href=<?=$url_web?>>
+                    	<img src="/themes/ntk/images/logo-ntk.png" height="64px" alt="Národní Technická knihovna" title="Národní Technická knihovna">
+                	</a>
+                	<a class="logo-secondary" href="http://www.vscht.cz/"><img src="/themes/ntk/images/vscht-pic.png" alt="VŠCHT" height="48px" title="VŠCHT"></a>
+                	<a class="logo-secondary" href="http://www.uochb.cz/"><img src="/themes/ntk/images/uochb-pic.png" alt="ÚOCHB" height="53px" title="ÚOCHB" style="margin-top:-3px;"></a>
+            	</div>
+            <? endif; ?>
+	    <? if ($this->layout()->searchbox !== false): ?>
+                <div class="col-xs-8">
+                    <?=$this->layout()->searchbox ?>
+                </div>
+            <? endif; ?>
+        </div>
+        <? if (!isset($this->layout()->renderingError)): ?>
+            <div class="navbar navbar-inverse">
+                <div role="navigation" class="nav-topright">
+                    <? if ($this->feedback()->tabEnabled()): ?>
+                        <li>
+                            <a id="feedbackLink" class="modal-link" href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope"></i> <?=$this->transEsc("Feedback")?></a>
+                        </li>
+                    <? endif; ?>
+                    <? $cart = $this->cart(); if ($cart->isActive()): ?>
+                        <li id="cartSummary">
+                            <a id="cartItems" class="modal-link" title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><i class="fa fa-suitcase"></i> <strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?><?=$cart->isFull() ? ' (' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
+                        </li>
+                    <? endif; ?>
+<!--JAZYK-->
+                    <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+                        <div class="btn-group">
+                            <form method="post" name="langForm" id="langForm">
+                                <input type="hidden" name="mylang"/>
+                            </form>
+                            <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+                                <?if($langCode != $this->layout()->userLang):?>
+                                    <a class="btn" href="#" onClick="document.langForm.mylang.value='<?=$langCode?>';document.langForm.submit()"><i class="sprite-<?=$langCode?>-flag"></i><span><?=$this->displayLanguageOption($langName)?></span></a>
+                                <? endif; ?>
+                            <? endforeach; ?>
+                        </div>
+                    <? endif; ?>
+<!--PRIHLASENI-->
+                    <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+                        <a id="logoutOptions" <? if(!$account->isLoggedIn()): ?> class="hidden"<? endif ?>" href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" class="btn tab-up" title="<?=$this->transEsc("Your Account")?>"><i class="glyphicon glyphicon-user"></i>
+                        <? if (!empty($_SERVER["givenName"])) print_r($_SERVER["givenName"]." "); if (!empty($_SERVER["sn"])) print_r($_SERVER["sn"]); ?></a>
+                        <a id="logoutOptions" <? if(!$account->isLoggedIn()): ?> class="hidden"<? endif ?>" href="<?=$this->url('myresearch-logout')?>" class="btn tab-up" title="<?=$this->transEsc("Log Out")?>"><i class="glyphicon glyphicon-log-out"></i> <?=$this->transEsc("Log Out")?></a>
+                        <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+                            <a <? if($account->isLoggedIn()): ?> class="hidden"<? endif ?> id="loginOptions" class="btn tab-up" href="<?=$this->escapeHtmlAttr($sessionInitiator)?>" ><i class="glyphicon glyphicon-log-in"></i> <?=$this->transEsc("Institutional Login NTK")?></a>
+                        <? else: ?>
+                            <a <? if($account->isLoggedIn()): ?> class="hidden"<? endif ?> id="loginOptions" class="btn tab-up" href="<?=$this->url('myresearch-userlogin')?>" ><i class="glyphicon glyphicon-log-in"></i> <?=$this->transEsc("Login")?></a>
+                        <? endif; ?>
+                    <? endif; ?>
+
+                    <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
+                        <li class="dropdown">
+                            <form method="post" name="themeForm" action="" id="themeForm">
+                                <input type="hidden" name="ui"/>
+                            </form>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <? foreach ($this->layout()->themeOptions as $current): ?>
+                                    <li<?=$current['selected'] ? ' class="active"' : ''?>><a href="#" onClick="document.themeForm.ui.value='<?=$this->escapeHtmlAttr($current['name'])?>';document.themeForm.submit()"><?=$this->transEsc($current['desc'])?></a></li>
+                                <? endforeach; ?>
+                            </ul>
+                        </li>
+                    <? endif; ?>
+
+                </div>
+            </div>
+        <? endif; ?>
+    </div>
+</div>
