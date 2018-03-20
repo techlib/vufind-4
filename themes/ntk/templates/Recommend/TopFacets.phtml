@@ -1,0 +1,61 @@
+<?
+  // TODO: This file needs love
+  $topFacetSet = $this->recommend->getTopFacetSet();
+  $topFacetSettings = $this->recommend->getTopFacetSettings();
+  $results = $this->recommend->getResults();
+?>
+<? if (isset($topFacetSet)): ?>
+  <? foreach($topFacetSet as $title => $cluster): ?>
+    <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
+    <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
+    <div class="well well-sm">
+      <div class="well-title">
+        <strong><?=$this->transEsc('top_facet_label', ['%%label%%' => $this->translate($cluster['label'])]) ?></strong><br />
+      </div>
+      <div class="row">
+      <? $iter=1; $limit = $topFacetSettings['rows'] * $topFacetSettings['cols']; ?>
+      <? foreach($cluster['list'] as $index => $thisFacet): ?>
+        <? /* More link */ ?>
+        <? if ($iter == $limit+1): ?>
+          </div><div class="well-expander" id="more-NarrowGroupHidden_<?=$this->escapeHtml($title)?>">
+            <a class="btn btn-xs btn-link" href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;">
+              <?=$this->transEsc('more') ?> ...
+            </a>
+          </div><div class="row <?=$moreClass ?>">
+        <? endif; ?>
+
+      <? /* Columns */ ?>
+      <div class="col-xs-<?=floor(12/$topFacetSettings['cols'])?><? if ($iter == $limit+1) echo $moreClass ?>">
+        <span class="badge-tag">
+        <? if ($thisFacet['isApplied']): ?>
+          <?=$this->transEsc($thisFacet['displayText'])?> <i class="fa fa-check"></i>
+        <? else: ?>
+          <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->transEsc($thisFacet['displayText'])?></a> <span class="badge badge-inverse"><?=number_format($thisFacet['count']) ?>
+          <? if ($allowExclude): ?>
+            <a class="badge-action glyphicon glyphicon-remove" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"></a>
+          <? endif; ?>
+          </span>
+        <? endif; ?>
+        </span>
+      </div>   
+      <? /* Close rows */ ?>
+      <? if ($iter%$topFacetSettings['cols'] == 0 && $iter > 0): ?></div><div class="row<? if(++$row > $topFacetSettings['rows']) echo $moreClass ?>"><? endif; ?>
+      <? /* Less link */ ?>
+      <? if (count($cluster['list']) >= $limit && $iter == count($cluster['list'])): ?>
+        </div> 
+      <? elseif (count($cluster['list']) < $limit && $iter == count($cluster['list'])): ?>
+        </div>
+      <? endif; ?>
+      <? $iter++; ?>
+      <? endforeach; ?>
+      <? /* Less link */ ?>
+      <? if (count($cluster['list']) > $limit): ?>
+        <div class="well-expander" id="less">
+        <a class="btn btn-xs btn-link narrow-toggle <?=$moreClass ?>" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;">
+          <?=$this->transEsc('less') ?> ...
+        </a>
+        </div>
+      <? endif; ?>
+    </div>
+  <? endforeach; ?>
+<? endif; ?>
