@@ -46,4 +46,6 @@ span.available-status {
 .seealso_psh{
     background-position: -7px -118px;
 }
-
+.savedLists {
+    border-radius: 0;
+}
