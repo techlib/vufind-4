@@ -9174,8 +9174,8 @@ h3 a:hover {
   font-family: 'icomoon';
   font-style: normal;
   font-weight: normal;
-  src: url('../fonts/icomoon/icomoon.eot');
-  src: url('../fonts/icomoon/icomoon.eot?#iefix') format('embedded-opentype'), url('../fonts/icomoon/icomoon.woff') format('woff'), url('../fonts/icomoon/icomoon.ttf') format('truetype'), url('../fonts/icomoon/icomoon.svg#icomoon') format('svg');
+  src: url('fonts/icomoon/icomoon.eot');
+  src: url('fonts/icomoon/icomoon.eot?#iefix') format('embedded-opentype'), url('fonts/icomoon/icomoon.woff') format('woff'), url('fonts/icomoon/icomoon.ttf') format('truetype'), url('fonts/icomoon/icomoon.svg#icomoon') format('svg');
 }
 
 /* Use the following CSS code if you want to use data attributes for inserting your icons */
