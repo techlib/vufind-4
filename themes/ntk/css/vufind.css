@@ -333,63 +333,63 @@ div.form-horizontal {
   background-repeat: no-repeat;
 }
 .electronic {
-  background-image:url(../../images/www.png);
+  background-image:url(../images/www.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .map {
-  background-image:url(../../images/map.png);
+  background-image:url(../images/map.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .globe {
-  background-image:url(../../images/world.png);
+  background-image:url(../images/world.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .slide {
-  background-image:url(../../images/photo.png);
+  background-image:url(../images/photo.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .microfilm {
-  background-image:url(../../images/film.png);
+  background-image:url(../images/film.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .photo {
-  background-image:url(../../images/picture.png);
+  background-image:url(../images/picture.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .video {
-  background-image:url(../../images/video.png);
+  background-image:url(../images/video.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .kit {
-  background-image:url(../../images/package.png);
+  background-image:url(../images/package.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .musicalscore {
-  background-image:url(../../images/music.png);
+  background-image:url(../images/music.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
@@ -398,55 +398,55 @@ div.form-horizontal {
 .sensorimage {
 }
 .audio {
-  background-image:url(../../images/audio-volume-high.png);
+  background-image:url(../images/audio-volume-high.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .physicalobject {
-  background-image:url(../../images/physical.png);
+  background-image:url(../images/physical.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .manuscript {
-  background-image:url(../../images/report_edit.png);
+  background-image:url(../images/report_edit.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .ebook {
-  background-image:url(../../images/ebook.png);
+  background-image:url(../images/ebook.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .book {
-  background-image: url('../../images/BK.png');
+  background-image: url('../images/BK.png');
 }
 .standardformat {
-  background-image: url('../../images/sd.png');
+  background-image: url('../images/sd.png');
 }
 .article {
-  background-image:url(../../images/RS.png);
+  background-image:url(../images/RS.png);
   /*background-repeat:no-repeat;*/
   /*background-position: left top;*/
   /*padding:0 .5em .5em 20px;*/
   /*margin-right:1em;*/
 }
 .journal {
-  background-image:url(../../images/SE.png);
+  background-image:url(../images/SE.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
   margin-right:1em;
 }
 .newspaper {
-  background-image:url(../../images/newspaper.png);
+  background-image:url(../images/newspaper.png);
   background-repeat:no-repeat;
   background-position: left top;
   padding:0 .5em .5em 20px;
