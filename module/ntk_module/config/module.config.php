@@ -19,6 +19,13 @@ return array (
           'alephimagecovers' => 'ntk_module\\Content\\Covers\\AlephImageCovers',
         ),
       ),
+      'recorddriver' =>
+      array (
+        'factories' =>
+        array (
+          'solrmarc' => 'ntk_module\\RecordDriver\\Factory::getSolrMarc',
+        ),
+      ),
     ),
   ),
   'controllers' => 

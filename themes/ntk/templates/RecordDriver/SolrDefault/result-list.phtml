@@ -25,12 +25,14 @@
         </a>
       </div>
 
-      <div>
+      <small>
         <? if($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
         <? else: ?>
           <? $summAuthors = $this->driver->getPrimaryAuthorsWithHighlighting(); if (!empty($summAuthors)): ?>
-            <?=$this->transEsc('by')?>
+            <span class="text-muted">
+              <?=$this->transEsc('by')?>
+            </span>
             <? $authorCount = count($summAuthors); foreach ($summAuthors as $i => $summAuthor): ?>
               <a href="<?=$this->record($this->driver)->getLink('author', $this->highlight($summAuthor, null, true, false))?>"><?=$this->highlight($summAuthor)?></a><?=$i + 1 < $authorCount ? ',' : ''?>
             <? endforeach; ?>
@@ -46,8 +48,8 @@
             <a href="<?=($containerID ? $this->recordLink()->getUrl("$containerSource|$containerID") : $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)))?>"><?=$this->highlight($journalTitle) ?></a>
             <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
           <? elseif (!empty($summDate)): ?>
-            <?=!empty($summAuthor) ? '<br />' : ''?>
-            <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
+            <span class="text-muted">
+              <?=$this->transEsc('Published') . ': </span> ' . $this->escapeHtml($summDate[0])?>
           <? endif; ?>
           <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
             <? foreach ($summInCollection as $collId => $collText): ?>
@@ -60,18 +62,7 @@
             <? endforeach; ?>
           <? endif; ?>
         <? endif; ?>
-      </div>
-
-      <? if(!$this->driver->isCollection()): ?>
-        <? if ($snippet = $this->driver->getHighlightedSnippet()): ?>
-          <? if (!empty($snippet['caption'])): ?>
-            <strong><?=$this->transEsc($snippet['caption']) ?>:</strong> ';
-          <? endif; ?>
-          <? if (!empty($snippet['snippet'])): ?>
-            <span class="quotestart">&#8220;</span>...<?=$this->highlight($snippet['snippet']) ?>...<span class="quoteend">&#8221;</span><br/>
-          <? endif; ?>
-        <? endif; ?>
-      <? endif; ?>
+      </small>
 
       <?
       /* Display information on duplicate records if available */
@@ -99,20 +90,25 @@
 
       <div class="callnumAndLocation ajax-availability hidden">
         <? if ($this->driver->supportsAjaxStatus()): ?>
-          <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
-          <span class="callnumber ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...<br/>
-          </span>
           <strong><?=$this->transEsc('Located')?>:</strong>
+          <a id="linkhref" href='' data-lightbox data-lightbox-href='' data-lightbox-title=''>
           <span class="location ajax-availability hidden">
             <?=$this->transEsc('Loading')?>...
           </span>
+          </a>
           <div class="locationDetails"></div>
         <? else: ?>
           <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
             <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
           <? endif; ?>
         <? endif; ?>
+      </div>
+
+      <div class="result-formats">
+        <?=$this->record($this->driver)->getFormatList() ?>
+        <span class="status ajax-availability hidden">
+          <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
+        </span>
       </div>
 
       <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
@@ -132,20 +128,37 @@
         <? if (!is_array($urls)) $urls = array();
           if(!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link" aria-hidden="true"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
+              <?$collection = $this->driver->getCollection();
+                (($current["url"] == $current["desc"]) || ($current["desc"] == "Bez proxy")) ? $description ="Get full text" : $description = $current["desc"];
+                if($current["sub_z"] == 'Bez proxy'){
+                    echo '<a href="' . $current["url"] . '">' . $this->transEsc($description) . '</a><br/>';
+                }else{
+                    switch($collection){
+                        case 'NTK':
+                            if (preg_match('/vydavatelstvi.vscht/',$current["url"])) {
+                                echo '<a href="' . $current["url"] . '">' . $this->transEsc($description) . '</a><br/>';
+                            }else {
+                                echo '<a href="'.$this->escapeHtmlAttr($this->proxyUrl($current["url"])).'" class="fulltext" target="new"><i class="fa fa-external-link"></i> '.$this->transEsc($description).'</a><br/>';
+                            }
+                            break;
+                        case 'VSCHT':
+                            if (preg_match('/vydavatelstvi.vscht/',$current["url"])) {
+                                echo '<a href="' . $current["url"] . '">' . $this->transEsc($description) . '</a><br/>';
+                            }else {
+                                echo '<a href="https://ezproxy.vscht.cz/login?qurl=' . $current["url"] . '" class="fulltext" target="new"><i class="fa fa-external-link"></i> ' . $this->transEsc($description) . '</a><br/>';
+                            }
+                            break;
+                        case 'UOCHB':
+                            echo '<a href="https://ezproxy.uochb.cas.cz:2443/login?qurl=' . $current["url"] . '" class="fulltext" target="new"><i class="fa fa-external-link"></i> ' . $this->transEsc($description) . '</a><br/>';
+                            break;
+                        default:
+                            echo '<a href="'.$current["url"].'" class="fulltext" target="new"><i class="fa fa-external-link"></i> '.$this->transEsc($description).'</a><br/>';
+                    }
+                }
+              ?>
           <? endforeach; ?>
         <? endif; ?>
       <? endif; ?>
-
-      <div class="result-formats">
-        <?=$this->record($this->driver)->getFormatList() ?>
-
-        <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
-          <span class="status ajax-availability hidden">
-            <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
-          </span>
-        <? endif; ?>
-      </div>
 
       <div class="result-previews">
         <?=$this->record($this->driver)->getPreviews()?>
