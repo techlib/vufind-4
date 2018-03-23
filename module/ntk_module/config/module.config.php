@@ -26,6 +26,13 @@ return array (
           'solrmarc' => 'ntk_module\\RecordDriver\\Factory::getSolrMarc',
         ),
       ),
+      'recordtab' =>
+      array (
+        'factories' =>
+        array (
+          'holdingsils' => 'ntk_module\\RecordTab\\Factory::getHoldingsILS',
+        ),
+      ),
     ),
   ),
   'controllers' => 
