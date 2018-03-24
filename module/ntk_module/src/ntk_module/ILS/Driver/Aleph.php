@@ -348,7 +348,7 @@ class Aleph extends AlephBase
                 //
                 // DM - status jednotky + dilci knihovna
                 //
-                if ($this->translator) {
+                if (1) {
                     // DM - preklad ze souboru AlephTables.php funkci tab15_translate - upraveno podle NTK
                     $item_status = tab15_translate($sub_library_code, $item_status, $item_process_status);
                 } else {
