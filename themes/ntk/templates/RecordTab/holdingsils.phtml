@@ -1,0 +1,277 @@
+<?
+    // Set up convenience variables:
+    $account = $this->auth()->getManager();
+    $user = $account->isLoggedIn();
+    $openUrl = $this->openUrl($this->driver, 'holdings');
+    $openUrlActive = $openUrl->isActive();
+    // Account for replace_other_urls setting
+    $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+    $offlineMode = $this->ils()->getOfflineMode();
+    try {
+        $holdings = $this->driver->getRealTimeHoldings();
+    } catch (\VuFind\Exception\ILS $e) {
+        $holdings = ['holdings' => []];
+        $offlineMode = 'ils-offline';
+    }
+    // Set page title.
+    $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
+    // NTK addition - holdings filter
+    $filters = $this->tab->getFilters();
+    $selectedFilters = $this->tab->getSelectedFilters();
+    $availableFilters = $this->tab->getAvailableFilters();
+?>
+
+<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->isLoggedIn()]); ?>
+
+<? if (!empty($holdings['blocks'])):?>
+  <div id="account-block-msg" class="alert alert-danger">
+    <?=$this->transEsc('account_block_options_missing', ['%%details%%' => implode('; ', $holdings['blocks'])]) ?>
+  </div>
+<? endif; ?>
+
+<?=($offlineMode == "ils-offline") ? $this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message']) : ''?>
+<? if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
+  <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
+    <? if (!$user): ?>
+      <div class="alert alert-info">
+        <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'Holdings')?>?login=true&amp;catalogLogin=true" data-lightbox><?=$this->transEsc("hold_login")?></a>
+      </div>
+    <? elseif (!$user->cat_username): ?>
+      <div class="alert alert-info">
+        <?=$this->translate("hold_profile_html", ['%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true'])?>
+      </div>
+    <? endif; ?>
+  <? endif; ?>
+<? endif; ?>
+<? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
+  <a class="placehold" data-lightbox title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
+<? endif; ?>
+<? if (!empty($urls) || $openUrlActive): ?>
+  <h3><?=$this->transEsc("Internet")?></h3>
+  <? if (!empty($urls)): ?>
+    <? foreach ($urls as $current): ?>
+      <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+    <? endforeach; ?>
+  <? endif; ?>
+  <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
+<? endif; ?>
+<!-- Filters -->
+<div class="holdings-filters breadcrumb-panel">
+    <? foreach($filters as $name => $values):?>
+        <? if (!empty($values)):?>
+            <? $filterName = $this->escapeHtml($name . '_filter');?>
+            <? $selectedVal = isset($selectedFilters[$name]) ? $selectedFilters[$name] : null;?>
+            <? $type = $availableFilters[$name]['type'];?>
+            <div class="col-xs-4">
+                <form class="form-inline" name="<?=$this->escapeHtml($name)?>_filter">
+                <?if ($type == 'select'):?>
+                    <label for="<?=$this->escapeHtml($name)?>"><?=$this->transEsc($filterName)?> : </label>
+                    <select class="form-control filter-select" name="<?=$this->escapeHtml($name)?>" onchange="document.forms['<?=$filterName?>'].submit()">
+                        <option value=""><?=$this->transEsc('all')?></option>
+                        <? foreach($values as $value):?>
+                            <option value="<?=$this->escapeHtml($value)?>" <?=($selectedVal == $value)?'selected="selected"':''?>><?=$this->escapeHtml($value)?></option>
+                        <? endforeach;?>
+                    </select>
+                <?endif;?>
+                <?if ($type == 'checkbox'):?>
+                    <input type="checkbox" name="<?=$this->escapeHtml($name)?>" value="true"
+                    onchange="document.forms['<?=$filterName?>'].submit()"
+                    <?=($selectedVal == 'true')?'checked="true"':''?>
+                    >
+                    <label for="<?=$this->escapeHtml($name)?>"><?=$this->transEsc($filterName)?></label>
+                <?endif;?>
+                <?=$this->tab->asHiddenFields($name);?>
+                </form>
+            </div>
+        <? endif; ?>
+    <? endforeach;?>
+</div>
+<table class="table">
+    <tbody>
+    <tr>
+        <th>
+            <?=$this->transEsc('Status')?>
+        </th>
+        <th>
+            <?=$this->transEsc('Sublibrary')?>
+        </th>
+        <th>
+            <?=$this->transEsc('Description')?>
+        </th>
+        <th>
+            <?=$this->transEsc('Location')?>
+        </th>
+        <th>
+            <?=$this->transEsc('LCC Callnumber')?>
+        </th>
+        <th>
+            <?=$this->transEsc('Old Callnumber')?>
+        </th>
+    </tr>
+    <? foreach ($holdings as $holding): ?>
+      <? foreach ($holding['items'] as $row): ?>
+        <?
+          // AJAX Check record?
+          $check = isset($row['check']) && $row['check'];
+          $checkStorageRetrievalRequest = isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest'];
+          $checkILLRequest = isset($row['checkILLRequest']) && $row['checkILLRequest'];
+        ?>
+        <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
+          <tr vocab="http://schema.org/" typeof="Offer">
+            <td>
+              <? if ($row['reserve'] == "Y"): ?>
+                <link property="availability" href="http://schema.org/InStoreOnly" />
+                <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
+              <? endif; ?>
+              <? if (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
+                <span class="text-muted"><?=$this->transEsc("status_unknown_message")?></span>
+              <? else: ?>
+                <? if ($row['availability']): ?>
+                  <? /* Begin Available Items (Holds) */ ?>
+                  <!-- zobrazeni statusu -->
+                  <?if ($this->layout()->userLang === 'cs'):?>
+                      <? if (preg_match('/nepůjčuje se/',$row['status']) || preg_match('/Prezenčně/',$row['status'])): ?>
+                          <span class="blue-status" data-toggle="tooltip" title="<?=$row['tooltip']?>"><?=$row['status']?></span>
+                      <? else: ?>
+                          <span class="available-status" data-toggle="tooltip" title="<?=$row['tooltip']?>"><?=$row['status']?></span>
+                      <? endif; ?>
+                  <? else: ?>
+                      <? if (preg_match('/nepůjčuje se/',$row['status']) || preg_match('/Prezenčně/',$row['status'])): ?>
+                          <span class="blue-status" data-toggle="tooltip" title="<?=$this->transEsc($row['tooltip'])?>"><?=$this->transEsc($row['status'])?></span>
+                      <? else: ?>
+                          <span class="available-status" data-toggle="tooltip" title="<?=$this->transEsc($row['tooltip'])?>"><?=$this->transEsc($row['status'])?></span>
+                      <? endif; ?>
+                  <? endif; ?>
+                  <? if (isset($row['link']) && $row['link']): ?>
+                    <a class="<?=$check ? 'checkRequest ' : ''?>placehold" <? if (!empty($row['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+                  <? endif; ?>
+                  <? if (isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
+                    <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest ' : ''?> placeStorageRetrievalRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></a>
+                  <? endif; ?>
+                  <? if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
+                    <a class="<?=$checkILLRequest ? 'checkILLRequest ' : ''?>placeILLRequest" data-lightbox href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></a>
+                  <? endif; ?>
+                <? else: ?>
+                  <? /* Begin Unavailable Items (Recalls) */ ?>
+                  <span class="text-danger"><?=$this->transEsc($row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+                  <? if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
+                  <? if (isset($row['duedate']) && $row['duedate']): ?>
+                    &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
+                  <? endif; ?>
+                  <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
+                    <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
+                  <? endif; ?>
+                  <? if (isset($row['link']) && $row['link']): ?>
+                    <a class="<?=$check ? 'checkRequest' : ''?> placehold" <? if (!empty($row['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+                  <? endif; ?>
+                <? endif; ?>
+                <? if (isset($row['item_notes'])): ?>
+                  <div class="item-notes">
+                    <b><?=$this->transEsc("Item Notes")?>:</b>
+                    <ul>
+                      <? foreach ($row['item_notes'] as $item_note): ?>
+                        <li><?=$this->escapeHtml($item_note) ?></li>
+                      <? endforeach; ?>
+                    </ul>
+                  </div>
+                <? endif; ?>
+              <? endif; ?>
+              <? /* Embed item structured data: library, barcode, call number */ ?>
+              <? if ($row['location']): ?>
+                <meta property="seller" content="<?=$this->escapeHtmlAttr($row['location'])?>" />
+              <? endif; ?>
+              <? if ($row['barcode']): ?>
+                <meta property="serialNumber" content="<?=$this->escapeHtmlAttr($row['barcode'])?>" />
+              <? endif; ?>
+              <? if ($row['callnumber']): ?>
+                <meta property="sku" content="<?=$this->escapeHtmlAttr($row['callnumber'])?>" />
+              <? endif; ?>
+              <? /* Declare that the item is to be borrowed, not for sale */ ?>
+                <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut" />
+                <link property="itemOffered" href="#record" />
+            </td>
+            <!-- dalsi sloupce tabulky jednotek -->
+            <td>    <!-- Sublibrary -->
+                    <?=$this->transEsc($row['sub_lib_desc'])?>
+            </td>
+            <td>    <!-- Description -->
+                    <?=$this->escapeHtml($row['description'])?>
+            </td>
+
+            <td>    <!-- Location -->
+
+            <? if ($row['sub_lib_desc'] == 'VŠCHT ústavy'): ?>
+                <?if ($this->layout()->userLang === 'cs'):?>
+                    <a href="https://www.chemtk.cz/cs/82950-seznam-ustavnich-knihoven">
+                <? else: ?>
+                    <a href="https://www.chemtk.cz/en/82974-departmental-libraries">
+                <? endif; ?>
+            <? elseif (empty($row['callnumber_second'])): ?>
+    <!--        studovna casopisu-->
+                <?if (preg_match("/3D/", $row['collection_desc']) > 0): ?>
+                    <a href="" data-lightbox-href="/periodicals.php" data-lightbox >
+                <? endif; ?>
+            <? else: ?>
+                <? if (preg_match("/koutek/", $row['collection_desc'])): ?>
+                    <!-- don't show link, we don't have that image yet -->
+                <? elseif (preg_match("/\\d/", $row['collection_desc']) > 0): ?>
+                    <?$LCC = explode(" ", $row['callnumber_second']);?>
+                    <a href=""  data-lightbox-href="/map.php?lcc=map<?=$LCC[0]?>" data-lightbox data-lightbox-title="<?if ($this->layout()->userLang === 'cs'):?><?=$this->escapeHtml($row['collection_desc'])?><? else: ?><?=$this->escapeHtml($row['collection'])?><? endif; ?>">
+    <!--        studovna casopisu-->
+                <? elseif (preg_match("/3D/", $row['collection_desc']) > 0): ?>
+                    <a href="" data-lightbox-href="/periodicals.php" data-lightbox>
+                <? endif; ?>
+            <? endif; ?>
+
+             <? if (($row['availability']) && ($row['sub_lib_desc'] !== 'VŠCHT ústavy')): ?>
+                <span class="loc">
+             <? endif; ?>
+
+                <?if ($this->layout()->userLang === 'cs'):?>
+                    <span data-toggle="tooltip" title="<?=$this->transEsc($row['tooltip-vscht'])?>"><?=$this->escapeHtml($row['collection_desc'])?></span>
+                <? else: ?>
+                    <? if ($row['collection'] == '02'): ?>
+                        Safe of HC
+                    <? else: ?>
+                        <?=$this->escapeHtml($row['collection'])?>
+                    <? endif; ?>
+                <? endif; ?>
+
+             <? if ($row['availability']): ?>
+                    </span>
+             <? endif; ?>
+
+                </a>
+            </td>
+            <td>    <!-- LCC Callnumber -->
+                    <?=$this->escapeHtml($row['callnumber_second'])?>
+            </td>
+            <td>    <!-- Old Callnumber -->
+                    <?=$this->escapeHtml($row['callnumber'])?>
+            </td>
+          </tr>
+        <? endif; ?>
+      <? endforeach; ?>
+      <? if (!empty($holding['purchase_history'])): ?>
+        <tr>
+          <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
+          <td>
+            <? foreach ($holding['purchase_history'] as $current): ?>
+              <?=$this->escapeHtml($current['issue'])?><br/>
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+    <? endforeach; ?>
+    </tbody>
+</table>
+
+<? $history = $this->driver->getRealTimeHistory(); ?>
+<? if (is_array($history) && !empty($history)): ?>
+<h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
+<table class="table table-striped">
+  <? foreach ($history as $row): ?>
+    <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
+  <? endforeach; ?>
+</table>
+<? endif; ?>
