@@ -43,4 +43,11 @@ return array (
       'my-research' => 'ntk_module\\Controller\\Factory::getMyResearchController',
     ),
   ),
+  'service_manager' =>
+  array (
+    'factories' =>
+    array (
+      'VuFind\\ILSHoldLogic' => 'ntk_module\Service\Factory::getILSHoldLogic',
+    ),
+  ),
 );
