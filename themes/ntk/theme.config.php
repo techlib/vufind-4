@@ -11,4 +11,9 @@ return array(
         'active' => true,
         'compiled.less'
     ),
+    'helpers' => array(
+        'factories' => array(
+            'recorddataformatter' => 'ntk_module\View\Helper\RecordDataFormatterFactory',
+        ),
+    ),
 );

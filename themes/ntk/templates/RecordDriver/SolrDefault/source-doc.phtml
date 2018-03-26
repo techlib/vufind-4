@@ -1,0 +1,11 @@
+<? if (!empty($data['title'])): ?>
+    <? if (!empty($data['issn'])): ?>
+      <a href="<?=$this->url('home')?>Search/Results?lookfor=<?=$data['issn'][0]?>&type=ISN">
+        <?=$data['title'][0]?>
+      </a>
+    <? else: ?>
+        <?=$data['title'][0]?>
+    <? endif; ?>
+    , <?=$data['related'][0]?>
+<? endif; ?>
+

@@ -46,6 +46,24 @@ class SolrMarc extends SolrMarcBase
      * Support functions for holding filters
      * Daniel Marecek, NTK
      */
+    
+    /**
+     * Fields that may contain subject headings, and their descriptions
+     *
+     * @var array
+     */
+    protected $subjectFields = [
+        '600' => 'personal name',
+        '610' => 'corporate name',
+        '611' => 'meeting name',
+        '630' => 'uniform title',
+        '648' => 'chronological',
+        '650' => 'topic',
+        '651' => 'geographic',
+        '653' => '',
+        //'655' => 'genre/form',
+        '656' => 'occupation'
+    ];
 
     public function getHoldingFilters()
     {
@@ -372,5 +390,81 @@ class SolrMarc extends SolrMarcBase
         }
 
         return $retVal;
+    }
+
+    /**
+     * Get all subject headings associated with this record.  Each heading is
+     * returned as an array of chunks, increasing from least specific to most
+     * specific.
+     *
+     * @param bool $extended Whether to return a keyed array with the following
+     * keys:
+     * - heading: the actual subject heading chunks
+     * - type: heading type
+     * - source: source vocabulary
+     *
+     * @return array
+     */
+    public function getAllSubjectHeadings($extended = false)
+    {
+        // This is all the collected data:
+        $retval = [];
+
+        // Try each MARC field one at a time:
+        foreach ($this->subjectFields as $field => $fieldType) {
+            // Do we have any results for the current field?  If not, try the next.
+            $results = $this->getMarcRecord()->getFields($field);
+            if (!$results) {
+                continue;
+            }
+
+            // If we got here, we found results -- let's loop through them.
+            foreach ($results as $result) {
+                // Start an array for holding the chunks of the current heading:
+                $current = [];
+
+                // Get all the chunks and collect them together:
+                $subfields = $result->getSubfields();
+                if ($subfields) {
+                    foreach ($subfields as $subfield) {
+                        // Numeric subfields are for control purposes and should not
+                        // be displayed:
+                        if (!is_numeric($subfield->getCode())) {
+                            if (($field == '650') && ($subfield->getCode() == 'x')){
+                                // zde jsou ulozeny dvoupismenne zkratky psh, ktere nechceme zobrazovat
+                            }else{
+                                $current[] = $subfield->getData();
+                            }
+                        }
+                    }
+                    // If we found at least one chunk, add a heading to our result:
+                    if (!empty($current)) {
+                        if ($extended) {
+                            $sourceIndicator = $result->getIndicator(2);
+                            $source = '';
+                            if (isset($this->subjectSources[$sourceIndicator])) {
+                                $source = $this->subjectSources[$sourceIndicator];
+                            } else {
+                                $source = $result->getSubfield('2');
+                                if ($source) {
+                                    $source = $source->getData();
+                                }
+                            }
+                            $retval[] = [
+                                'heading' => $current,
+                                'type' => $fieldType,
+                                'source' => $source ?: ''
+                            ];
+                        } else {
+                            $retval[] = $current;
+                        }
+                    }
+                }
+            }
+        }
+        // Remove duplicates and then send back everything we collected:
+        return array_map(
+            'unserialize', array_unique(array_map('serialize', $retval))
+        );
     }
 }
