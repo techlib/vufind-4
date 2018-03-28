@@ -1,0 +1,166 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb());
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li>' . $this->searchMemory()->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+        . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+        . '<li class="active">' . $this->transEsc('request_place_text') . '</li>';
+
+    // expiration of registration - show info + link
+    if ($this->renew_link){
+        echo '<div role="alert" class="alert alert-danger">';
+        echo $this->renew_link;
+        echo '</div>';
+    }
+?>
+
+<!-- DM - pokud je prazdne pickup-locations -> nelze rezervovat -> zobrazi info z Alephu, info se posila ve stejne promenne jako pickup-locations, s tim rozdilem, ze nejde o pole.
+        ikdyz je pickup-location jen jedno umisteni, ulozeno jako pole -->
+<? if (!is_array($this->pickup)){
+
+    echo ($this->transEsc($this->pickup));
+
+}else{ ?>
+    <p class="lead" xmlns="http://www.w3.org/1999/html">
+        <?
+            if (isset($_GET["order"]) && $_GET["order"] == 1){
+                print_r($this->transEsc('request_place_text_order'));
+            }else{
+                print_r($this->transEsc('request_place_text'));
+            }
+        ?>
+    </p>
+    <? if ($this->helpText): ?>
+    <p class="helptext"><?=$this->helpText?></p>
+    <? endif; ?>
+
+    <?=$this->flashmessages()?>
+    <div class="hold-form">
+      <form action="" class="form-horizontal" method="post" name="placeHold">
+        <? if (in_array("comments", $this->extraHoldFields)): ?>
+          <div class="form-group">
+            <label class="col-sm-3 control-label"><?=$this->transEsc("Comments")?>:</label>
+            <div class="col-sm-9">
+              <textarea rows="3" cols="20" name="gatheredDetails[comment]" class="form-control"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
+            </div>
+          </div>
+        <? endif; ?>
+
+        <? if (in_array("requiredByDate", $this->extraHoldFields)): ?>
+          <div class="form-group">
+            <label class="col-sm-3 control-label"><?=$this->transEsc("hold_required_by")?>:</label>
+            <div class="col-sm-9">
+              <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" class="form-control"/>
+                <i style="float: right; top: -30px; width: 19px; margin: 2px;" class="glyphicon glyphicon-calendar"></i>
+            </div>
+          </div>
+        <? endif; ?>
+          <script type="text/javascript">
+              // When the document is ready
+              $(document).ready(function () {
+                  $('#requiredByDate').datepicker({
+                      format: "dd.mm.yyyy",language: '<?=$this->layout()->userLang?>', orientation: 'bottom left'
+                  });
+              });
+          </script>
+
+        <? $showRequestGroups = in_array("requestGroup", $this->extraHoldFields)
+            && (empty($this->gatheredDetails['level'])
+                || $this->gatheredDetails['level'] != 'copy');
+        ?>
+        <? if ($this->requestGroupNeeded): ?>
+          <div class="form-group">
+            <?
+              if (isset($this->gatheredDetails['requestGroupId']) && $this->gatheredDetails['requestGroupId'] !== "") {
+                  $selected = $this->gatheredDetails['requestGroupId'];
+              } else {
+                  $selected = $this->defaultRequestGroup;
+              }
+           ?>
+            <label class="col-sm-3 control-label"><?=$this->transEsc("hold_request_group")?>:</label>
+            <div class="col-sm-9">
+              <select id="requestGroupId" name="gatheredDetails[requestGroupId]" class="form-control">
+              <? if ($selected === false): ?>
+                <option value="" selected="selected">
+                  <?=$this->transEsc('select_request_group')?>
+                </option>
+              <? endif; ?>
+              <? foreach ($this->requestGroups as $group): ?>
+                <option value="<?=$this->escapeHtmlAttr($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
+                  <?=$this->escapeHtml($group['name'])?>
+                </option>
+              <? endforeach; ?>
+              </select>
+            </div>
+          </div>
+        <? endif; ?>
+    <!--
+    *
+    *   DM - misto vyzvednuti
+    *
+    -->
+        <? if (in_array("pickUpLocation", $this->extraHoldFields)): ?>
+          <?
+            if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
+                $selected = $this->gatheredDetails['pickUpLocation'];
+            } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
+                $selected = $this->homeLibrary;
+            } else {
+                $selected = $this->defaultPickup;
+            }
+          ?>
+          <? if ($this->requestGroupNeeded): ?>
+            <div class="form-group">
+              <label id="pickUpLocationLabel" class="col-sm-3 control-label"><i></i> <?=$this->transEsc("pick_up_location")?>:
+                <? if (in_array("requestGroup", $this->extraHoldFields)): ?>
+                  <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
+                <? endif; ?>
+              </label>
+              <div class="col-sm-9">
+                <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>" class="form-control">
+                  <? if ($selected === false): ?>
+                  <option value="" selected="selected">
+                    <?=$this->transEsc('select_pickup_location')?>
+                  </option>
+                  <? endif; ?>
+                </select>
+              </div>
+            </div>
+          <? else: ?>
+                <!-- DM - zobrazeni JEDNOHO/prvniho mista vyzvednuti - jako text (ne select box) -->
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><?=$this->transEsc("pick_up_location")?>:</label>
+                <div class="col-sm-9">
+                    <input name="gatheredDetails[pickUpLocation]" value="<?=$this->pickup[0]['locationID']?>" class="form-control" size="8" type="hidden" />
+                    <input value="<?=$this->transEsc($this->pickup[0]['locationID'])?>" class="form-control" size="8" readonly/>
+                    </input>
+                </div>
+            </div>
+          <? endif; ?>
+        <? endif; ?>
+        <div class="form-group">
+          <div class="col-sm-9 col-sm-offset-3">
+            <input class="btn btn-primary" type="submit" name="placeHold" value="<?=$this->transEsc('request_submit_text')?>"/>
+          </div>
+        </div>
+      </form>
+    </div>
+<!-- DM - pokud je prazdne pickup-locations -> nelze rezervovat -> zobrazi info z Alephu -->
+<? }?>
+<?
+    // Set up hold script; we do this inline instead of in the header for lightbox compatibility:
+    $this->inlineScript()->appendFile('hold.js');
+
+    $js = <<<JS
+        if ($.isReady) {
+            setUpHoldRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+        } else {
+            $(document).ready(function(){
+                setUpHoldRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+            });
+        }
+JS;
+
+    echo $this->inlineScript()->appendScript($js);
+?>
