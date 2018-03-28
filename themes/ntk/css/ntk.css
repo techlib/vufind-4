@@ -52,3 +52,11 @@ span.available-status {
 .pagination > li > a {
     color: #1a1a1a;
 }
+.search-controls {
+    text-align: left;
+}
+.result .media-heading a {
+    display:inline;
+    position:relative;
+    bottom:4px;
+}

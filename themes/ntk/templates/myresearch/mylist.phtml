@@ -1,0 +1,109 @@
+<?
+  // Grab list object from search results (if applicable):
+  $list = $this->results->getListObject();
+
+  // Set up page title:
+  $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
+
+  // Set up breadcrumbs:
+  $currPage = isset($list) ? 'List' : 'Favorites';
+  $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
+
+  // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("check_item_statuses.js");
+
+  $recordTotal = $this->results->getResultTotal();
+
+  // Convenience variable:
+  $account = $this->auth()->getManager();
+  $user = $this->auth()->isLoggedIn();
+?>
+
+<?=$this->flashmessages()?>
+
+<div class="row">
+  <div class="col-xs-12 col-md-9 line-right">
+    <? if (isset($list) && (!$recordTotal > 0)): ?>
+        <div class="col-md-6">
+          <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
+        </div>
+        <? if ($list->editAllowed($account->isLoggedIn())): ?>
+            <div class="btn-group">
+              <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="btn btn-sm btn-default" title="<?=$this->transEsc("edit_list")?>"><i class="fa fa-edit"></i> <?=$this->transEsc("edit_list")?></a>
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
+                  <i class="fa fa-trash-o"></i> <?=$this->transEsc("delete_list")?>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('Delete') ?></a></li>
+                  <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+                </ul>
+              </div>
+            </div>
+        <? endif; ?>
+    <? elseif ($recordTotal > 0): ?>
+      <div class="row">
+        <div class="col-md-6">
+          <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
+        </div>
+        <div class="col-md-6 text-right">
+          <?=$this->render('search/controls/limit.phtml')?>
+          <?=$this->render('search/controls/sort.phtml')?>
+        </div>
+      </div>
+      <? if ($list && !empty($list->description)): ?>
+        <p><?=$this->escapeHtml($list->description)?></p>
+      <? endif; ?>
+      <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>">
+        <div class="btn-toolbar hidden-print" role="toolbar">
+        <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
+
+          <? if (isset($list)): ?>
+            <? if ($list->editAllowed($account->isLoggedIn())): ?>
+            <div class="btn-group">
+              <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="btn btn-sm btn-default" title="<?=$this->transEsc("edit_list")?>"><i class="fa fa-edit"></i> <?=$this->transEsc("edit_list")?></a>
+              <div class="btn-group">
+                <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
+                  <i class="fa fa-trash-o"></i> <?=$this->transEsc("delete_list")?>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('Delete') ?></a></li>
+                  <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+                </ul>
+              </div>
+            </div>
+            <? endif; ?>
+          <? endif; ?>
+          </div>
+
+        <div class="search-controls hidden-print">
+
+            <?=$this->transEsc("Showing")?>
+            <strong><?=$this->escapeHtml($this->results->getStartRecord())?></strong> - <strong><?=$this->escapeHtml($this->results->getEndRecord())?></strong>
+            <?=$this->transEsc('of')?> <strong><?=number_format($recordTotal)?></strong>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+                <?=$this->transEsc('select_page')?>
+              </label>
+            </div>
+
+        </div>
+        <? foreach ($this->results->getResults() as $i=>$current): ?>
+          <?=$this->record($current)->getListEntry($list, $user)?>
+        <? endforeach; ?>
+      </form>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+    <? else: ?>
+      <h2><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
+      <p><?=$this->transEsc('You do not have any saved resources')?></p>
+    <? endif; ?>
+  </div>
+
+  <div class="col-xs-12 col-sm-3 hidden-print">
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'))?>
+    <? foreach ($this->results->getRecommendations('side') as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+  </div>
+</div>
