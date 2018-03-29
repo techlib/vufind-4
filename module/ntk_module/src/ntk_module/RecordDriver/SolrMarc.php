@@ -182,54 +182,6 @@ class SolrMarc extends SolrMarcBase
         return http_build_query($params);
     }
 
-    /**
-     * Returns one of three things: a full URL to a thumbnail preview of the record
-     * if an image is available in an external system; an array of parameters to
-     * send to VuFind's internal cover generator if no fixed URL exists; or false
-     * if no thumbnail can be generated.
-     *
-     * @param string $size Size of thumbnail (small, medium or large -- small is
-     * default).
-     *
-     * @return string|array|bool
-     */
-    public function getThumbnail($size = 'small')
-    {
-        if (isset($this->fields['thumbnail']) && $this->fields['thumbnail']) {
-            return $this->fields['thumbnail'];
-        }
-        $arr = [
-            'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
-            'callnumber' => $this->getCallNumber(),
-            'size'       => $size,
-            'title'      => mb_substr($this->getTitle(), 0, 300, 'utf-8')
-        ];
-        if ($isbn = $this->getCleanISBN()) {
-            $arr['isbn'] = $isbn;
-        }
-        if ($issn = $this->getCleanISSN()) {
-            $arr['issn'] = $issn;
-        }
-        if ($oclc = $this->getCleanOCLCNum()) {
-            $arr['oclc'] = $oclc;
-        }
-        if ($upc = $this->getCleanUPC()) {
-            $arr['upc'] = $upc;
-        }
-        if ($uid = $this->getUniqueID()) {
-            $arr['uid'] = $uid;
-        }
-        // If an ILS driver has injected extra details, check for IDs in there
-        // to fill gaps:
-        if ($ilsDetails = $this->getExtraDetail('ils_details')) {
-            foreach (['isbn', 'issn', 'oclc', 'upc'] as $key) {
-                if (!isset($arr[$key]) && isset($ilsDetails[$key])) {
-                    $arr[$key] = $ilsDetails[$key];
-                }
-            }
-        }
-        return $arr;
-    }
 
     /**
      * Get an array of publication detail lines combining information from
