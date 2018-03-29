@@ -153,7 +153,11 @@
                   <? endif; ?>
                 <? else: ?>
                   <? /* Begin Unavailable Items (Recalls) */ ?>
-                  <span class="text-danger"><?=$this->transEsc($row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+                  <?if ($this->layout()->userLang === 'cs'):?>
+                    <span class="text-danger" data-toggle="tooltip" title="<?=$row['tooltip']?>"><?=$row['status']?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+                  <? else: ?>
+                    <span class="text-danger" data-toggle="tooltip" title="<?=$this->transEsc($row['tooltip'])?>"><?=$this->transEsc($row['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+                  <? endif; ?>
                   <? if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
                   <? if (isset($row['duedate']) && $row['duedate']): ?>
                     &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
