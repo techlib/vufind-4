@@ -131,7 +131,7 @@ class Aleph extends AlephBase
      * @param \VuFind\Date\Converter $dateConverter Date converter
      * @param \VuFind\Cache\Manager  $cacheManager  Cache manager (optional)
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter,
+    public function __construct(\ntk_module\Date\Converter $dateConverter,
         \VuFind\Cache\Manager $cacheManager = null
     ) {
         $this->dateConverter = $dateConverter;

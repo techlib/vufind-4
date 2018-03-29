@@ -41,6 +41,7 @@ return array (
     array (
       'ajax' => 'ntk_module\\Controller\\Factory::getAjaxController',
       'my-research' => 'ntk_module\\Controller\\Factory::getMyResearchController',
+      'record' => 'ntk_module\\Controller\\Factory::getRecordController',
     ),
   ),
   'service_manager' =>
@@ -48,6 +49,7 @@ return array (
     'factories' =>
     array (
       'VuFind\\ILSHoldLogic' => 'ntk_module\Service\Factory::getILSHoldLogic',
+      'VuFind\\DateConverter' => 'ntk_module\Service\Factory::getDateConverter',
     ),
   ),
 );

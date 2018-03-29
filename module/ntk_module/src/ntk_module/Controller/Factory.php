@@ -28,7 +28,19 @@ class Factory
         );
     }
 
-
-
+    /**
+     * Construct the RecordController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return RecordController
+     */
+    public static function getRecordController(\Zend\ServiceManager\ServiceManager $sm)
+    {
+        return new RecordController(
+            $sm->getServiceLocator(),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
+    }
 }
 

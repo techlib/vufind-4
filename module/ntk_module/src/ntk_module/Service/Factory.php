@@ -19,5 +19,19 @@ class Factory
             $sm->get('VuFind\HMAC'), $sm->get('VuFind\Config')->get('config')
         );
     }
+
+    /**
+     * Construct the date converter.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Date\Converter
+     */
+    public static function getDateConverter(ServiceManager $sm)
+    {
+        return new \ntk_module\Date\Converter(
+            $sm->get('VuFind\Config')->get('config')
+        );
+    }
 }
 
