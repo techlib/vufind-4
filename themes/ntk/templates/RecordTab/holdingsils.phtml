@@ -8,7 +8,7 @@
     $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
     $offlineMode = $this->ils()->getOfflineMode();
     try {
-        $holdings = $this->driver->getRealTimeHoldings();
+        $holdings = $this->tab->getRealTimeHoldings();
     } catch (\VuFind\Exception\ILS $e) {
         $holdings = ['holdings' => []];
         $offlineMode = 'ils-offline';
