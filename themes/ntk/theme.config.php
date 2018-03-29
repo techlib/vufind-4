@@ -7,6 +7,11 @@ return array(
         'vufind.css',
         'ntk.css',
     ),
+    'js' => array(
+        'NTK.js',
+        'bootstrap-datepicker.js',
+        'bootstrap-datepicker.cs.js',
+    ),
     'less' => array(
         'active' => true,
         'compiled.less'

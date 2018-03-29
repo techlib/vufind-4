@@ -109,5 +109,16 @@
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
   </div>
+  <!-- Widgety přidané pro NTK -->
+  <div class="sidegroup" id="ntkThingHolder">
+      <script type="text/javascript">
+        // Nastavení proměnných - DM - pridan jazyk, kvuli prekladu
+        NTK.options.lang = "<?=$this->layout()->userLang?>";
+        NTK.options.isbn = "<?=$this->escapeHtmlAttr($this->driver->getCleanISBN())?>";
+        NTK.toc.init();
+      </script>
+            <div id="ntk_toc">
+      </div>
+  </div>
 </div>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>
