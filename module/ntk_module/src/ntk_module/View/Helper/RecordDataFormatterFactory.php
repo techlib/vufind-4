@@ -26,11 +26,11 @@ class RecordDataFormatterFactory extends RecordDataFormatterFactoryBase
         $spec->setTemplateLine(
             'Published in', 'getContainerTitle', 'data-containerTitle.phtml'
         );
-        $spec->setLine(
-            'New Title', 'getNewerTitles', null, ['recordLink' => 'title']
+        $spec->setTemplateLine(
+            'New Title', 'getNewerTitles', 'data-title-next.phtml', ['recordLink' => 'title']
         );
-        $spec->setLine(
-            'Previous Title', 'getPreviousTitles', null, ['recordLink' => 'title']
+        $spec->setTemplateLine(
+            'Previous Title', 'getPreviousTitles', 'data-title-previous.phtml', ['recordLink' => 'title']
         );
         $spec->setTemplateLine(
             'Main Authors', 'getDeduplicatedAuthors', 'data-authors.phtml',

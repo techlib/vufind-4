@@ -1,0 +1,16 @@
+<? foreach ($data as $field): ?>
+  <? if (!empty($field)): ?>
+    <a href="<?=$this->record($this->driver)->getLink('title', $field)?>">
+        <?=$this->escapeHtml($field)?>
+    </a>
+  <? endif; ?>
+    <?
+    $issn_ref = $this->driver->getRefISSNs();
+    for ($i=0; $i<sizeof($issn_ref); $i++){
+        if ($issn_ref[$i]['nazev'] == $field){
+            print_r('(ISSN: '.$issn_ref[$i]['issn'].')');
+        }
+    }
+    ?>
+<? endforeach; ?>
+
