@@ -419,4 +419,77 @@ class SolrMarc extends SolrMarcBase
             'unserialize', array_unique(array_map('serialize', $retval))
         );
     }
+
+    /**
+     * Get an array of all ISSNs associated with the record (may be empty).
+     *
+     * @return array
+     */
+    public function getISSNs()
+    {
+        // delete issns, which are already displayed in series raws
+        $issn_serie = $this->getSeriesFromMARC(['490' => ['a']]);
+        if(isset($this->fields['issn'])){
+            foreach ($this->fields['issn'] as $ind => $issn) {
+                foreach ($issn_serie as $key => $value) {
+                    if ( $value['issn'] == $issn) {
+                        unset($this->fields['issn'][$ind]);
+                    }
+                }
+            }
+        }
+        // If ISSN is in the index, it should automatically be an array... but if
+        // it's not set at all, we should normalize the value to an empty array.
+        return isset($this->fields['issn']) && is_array($this->fields['issn']) ?
+            $this->fields['issn'] : [];
+    }
+
+    /**
+     * Support method for getSeries() -- given a field specification, look for
+     * series information in the MARC record.
+     *
+     * @param array $fieldInfo Associative array of field => subfield information
+     * (used to find series name)
+     *
+     * @return array
+     */
+    protected function getSeriesFromMARC($fieldInfo)
+    {
+        $matches = [];
+
+        // Loop through the field specification....
+        foreach ($fieldInfo as $field => $subfields) {
+            // Did we find any matching fields?
+            $series = $this->getMarcRecord()->getFields($field);
+            if (is_array($series)) {
+                foreach ($series as $currentField) {
+                    // Can we find a name using the specified subfield list?
+                    $name = $this->getSubfieldArray($currentField, $subfields);
+                    if (isset($name[0])) {
+                        $currentArray = ['name' => $name[0]];
+
+                        // Can we find a number in subfield v?  (Note that number is
+                        // always in subfield v regardless of whether we are dealing
+                        // with 440, 490, 800 or 830 -- hence the hard-coded array
+                        // rather than another parameter in $fieldInfo).
+                        $number
+                            = $this->getSubfieldArray($currentField, ['v']);
+                        if (isset($number[0])) {
+                            $currentArray['number'] = $number[0];
+                        }
+                        $issn
+                            = $this->getSubfieldArray($currentField, ['x']);
+                        if (isset($issn[0])) {
+                            $currentArray['issn'] = $issn[0];
+                        }
+
+                        // Save the current match:
+                        $matches[] = $currentArray;
+                    }
+                }
+            }
+        }
+
+        return $matches;
+    }
 }
