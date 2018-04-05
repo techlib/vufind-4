@@ -19,11 +19,11 @@
   <? endif ?>
   <div class="media-body">
     <div class="result-body">
-      <div>
+      <h3 class="media-heading">
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption() ?>">
           <?=$this->record($this->driver)->getTitleHtml()?>
         </a>
-      </div>
+      </h3>
 
       <small>
         <? if($this->driver->isCollection()): ?>
