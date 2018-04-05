@@ -60,3 +60,6 @@ span.available-status {
     position:relative;
     bottom:4px;
 }
+.facet-group .excludable {
+    display: block;
+}
