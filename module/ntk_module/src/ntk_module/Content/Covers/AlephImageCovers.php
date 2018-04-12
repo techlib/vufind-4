@@ -2,7 +2,7 @@
 
 namespace ntk_module\Content\Covers;
 
-class AlephImageCovers extends \VuFind\Content\AbstractCover
+class AlephImageCovers extends \ntk_module\Content\AbstractCover
 {
 
     /**
