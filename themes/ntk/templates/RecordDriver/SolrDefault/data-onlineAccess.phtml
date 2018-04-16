@@ -1,0 +1,42 @@
+<?
+  $openUrl = $this->openUrl($this->driver, 'record');
+  $openUrlActive = $openUrl->isActive();
+  // Account for replace_other_urls setting
+  $urls = $this->record($this->driver)->getLinkDetails($openUrlActive);
+?>
+<? if (!empty($urls) || $openUrlActive): ?>
+  <? foreach ($urls as $current): ?>
+    <?
+    $collection = $this->driver->getCollection();
+    (($current["url"] == $current["desc"]) || ($current["desc"] == "Bez proxy")) ? $description ="Get full text" : $description = $current["desc"];
+    if($current["sub_z"] == 'Bez proxy'){
+        echo '<a href="' . $current["url"] . '">' . $this->transEsc($description) . '</a><br/>';
+    }else{
+        switch($collection){
+          case 'NTK':
+            if (preg_match('/vydavatelstvi.vscht/',$current["url"])) {
+                echo '<a href="' . $current["url"] . '">' . $this->transEsc($description) . '</a><br/>';
+            }else {
+                echo '<a href="'.$this->escapeHtmlAttr($this->proxyUrl($current["url"])).'">'.$this->transEsc($description).'</a><br/>';
+            }
+            break;
+          case 'VSCHT':
+            if (preg_match('/vydavatelstvi.vscht/',$current["url"])) {
+              echo '<a href="' . $current["url"] . '">' . $this->transEsc($description) . '</a><br/>';
+            }else {
+              echo '<a href="https://ezproxy.vscht.cz/login?qurl=' . $current["url"] . '">' . $this->transEsc($description) . '</a><br/>';
+            }
+            break;
+          case 'UOCHB':
+            echo '<a href="https://ezproxy.uochb.cas.cz:2443/login?qurl=' . $current["url"] . '" class="fulltext" target="new"><i class="fa fa-external-link"></i> ' . $this->transEsc($description) . '</a><br/>';
+            break;
+          default:
+            echo '<a href="'.$current["url"].'">'.$this->transEsc($description).'</a><br/>';
+        }
+    }
+    ?>
+  <? endforeach; ?>
+  <? if ($openUrlActive): ?>
+    <?=$openUrl->renderTemplate()?><br/>
+  <? endif; ?>
+<? endif; ?>
