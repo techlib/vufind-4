@@ -10,6 +10,7 @@ TAGS
 /vendor
 composer.phar
 import/solrmarc.log
+import/solrmarc.log.1
 node_modules
 public/swagger-ui
 .vagrant
