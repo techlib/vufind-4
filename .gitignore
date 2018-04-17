@@ -7,7 +7,9 @@ TAGS
 *~
 /downloads
 /solr/vendor
+/solr/vufind/biblio/index.back
 /vendor
+vufind.log
 composer.phar
 import/solrmarc.log
 import/solrmarc.log.1
