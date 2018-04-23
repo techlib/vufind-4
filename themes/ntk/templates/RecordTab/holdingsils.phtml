@@ -123,7 +123,7 @@
         <th>
             <?=$this->transEsc('Sublibrary')?>
         </th>
-        <th>
+        <th style="width:143px;">
             <?=$this->transEsc('Description')?>
         </th>
         <th>
@@ -197,16 +197,6 @@
                     <a class="<?=$check ? 'checkRequest' : ''?> placehold" <? if (!empty($row['linkLightbox'])): ?>data-lightbox <? endif; ?>href="<?=$this->recordLink()->getRequestUrl($row['link'])?>"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;<?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
                   <? endif; ?>
                 <? endif; ?>
-                <? if (isset($row['item_notes'])): ?>
-                  <div class="item-notes">
-                    <b><?=$this->transEsc("Item Notes")?>:</b>
-                    <ul>
-                      <? foreach ($row['item_notes'] as $item_note): ?>
-                        <li><?=$this->escapeHtml($item_note) ?></li>
-                      <? endforeach; ?>
-                    </ul>
-                  </div>
-                <? endif; ?>
               <? endif; ?>
               <? /* Embed item structured data: library, barcode, call number */ ?>
               <? if ($row['location']): ?>
@@ -226,10 +216,16 @@
             <td>    <!-- Sublibrary -->
                     <?=$this->transEsc($row['sub_lib_desc'])?>
             </td>
-            <td>    <!-- Description -->
-                    <?=$this->escapeHtml($row['description'])?>
+            <td>    <!-- Description & Notes -->
+                <?=$this->escapeHtml($row['description'])?>
+                <? if (isset($row['notes'])): ?>
+                  <div class="item-notes">
+                      <? foreach ($row['notes'] as $item_note): ?>
+                        <?=$this->escapeHtml($item_note) ?>
+                      <? endforeach; ?>
+                  </div>
+                <? endif; ?>
             </td>
-
             <td>    <!-- Location -->
 
             <? if ($row['sub_lib_desc'] == 'VŠCHT ústavy'): ?>
