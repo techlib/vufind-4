@@ -1,0 +1,44 @@
+<? $suggestions = $this->recommend->getSuggestions(); if (!empty($suggestions)): ?>
+  <div class="alert alert-info">
+    <p><?=$this->transEsc('switchquery_intro')?></p>
+    <ul>
+      <? foreach ($suggestions as $desc => $query): ?>
+        <li><font color="black"><?=$this->transEsc($desc)?>:</font> <a href="<?=$this->recommend->getResults()->getUrlQuery()->setSearchTerms($query)?>"><?=$this->escapeHtml($query)?></a>.</li>
+      <? endforeach; ?>
+    </ul>
+    </br>
+    <p><?=$this->transEsc('lib_help_intro')?>:
+		<ul>
+			<?if ($this->layout()->userLang === 'cs'):?>
+				<li>
+					<a href="https://www.techlib.cz/cs/2930-referencni-a-resersni-sluzby"><?=$this->transEsc('Reference and Research Help')?></a>	
+				</li>
+				<li>
+					<a href="http://techlib.summon.serialssolutions.com/cs-CZ/#!/"><?=$this->transEsc('All Library Resources')?></a>
+				</li>
+				<li>
+					<a href="https://www.techlib.cz/cs/2731-meziknihovni-sluzby-a-objednavani-clanku"><?=$this->transEsc('Interlibrary Loan and Document Delivery Services')?></a>
+				</li>
+				<li>
+					<a href="https://www.techlib.cz/cs/2856-navrh-na-zakoupeni-publikace-do-fondu-ntk"><?=$this->transEsc('Suggest a purchase')?></a>
+				</li>
+			<?else:?>
+				<li>
+					<a href="https://www.techlib.cz/en/83064-reference-and-research-help"><?=$this->transEsc('Reference and Research Help')?></a>
+				</li>
+				<li>
+					<li><a href="http://techlib.summon.serialssolutions.com/en/#!/"><?=$this->transEsc('All Library Resources')?></a></li>
+				</li>
+				<li>
+					<a href="https://www.techlib.cz/en/2791-interlibrary-loan-and-document-delivery-services"><?=$this->transEsc('Interlibrary Loan and Document Delivery Services')?></a>
+				</li>
+				<li>
+					<a href="https://www.techlib.cz/en/2896-suggest-a-purchase"><?=$this->transEsc('Suggest a purchase')?></a>
+				</li>
+			<?endif;?>
+		</ul>
+
+	</a>
+    </p>
+  </div>
+<? endif; ?>
