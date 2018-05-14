@@ -66,3 +66,9 @@ span.available-status {
 .iframe-cite {
     margin-top:50px;
 }
+
+@media only screen and (min-width: 992px) {
+    .holding_desc {
+        width:143px;
+    }
+}
