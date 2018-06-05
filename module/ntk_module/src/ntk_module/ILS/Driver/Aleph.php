@@ -37,6 +37,7 @@
  */
 namespace ntk_module\ILS\Driver;
 use VuFind\ILS\Driver\Aleph as AlephBase, VuFind\Exception\ILS as ILSException;
+use Zend\Http\Client\Adapter\Curl;
 
 require_once 'AlephTables.php';
 
@@ -256,6 +257,42 @@ class Aleph extends AlephBase
     }
 
     /**
+     * Perform a RESTful DLF request.
+     *
+     * @param array  $path_elements URL path elements
+     * @param array  $params        GET parameters (null for none)
+     * @param string $method        HTTP method
+     * @param string $body          HTTP body
+     *
+     * @return SimpleXMLElement
+     */
+    protected function doRestDLFRequest($path_elements, $params = null,
+        $method = 'GET', $body = null
+    ) {
+        $path = '';
+        foreach ($path_elements as $path_element) {
+            $path .= $path_element . "/";
+        }
+        $url = "https://$this->host:$this->dlfport/rest-dlf/" . $path;
+        $url = $this->appendQueryString($url, $params);
+        $result = $this->doHTTPRequest($url, $method, $body);
+        $replyCode = (string) $result->{'reply-code'};
+        if ($replyCode != "0000") {
+            $replyText = (string) $result->{'reply-text'};
+            $this->logError(
+                "DLF request failed", [
+                    'url' => $url, 'reply-code' => $replyCode,
+                    'reply-message' => $replyText
+                ]
+            );
+            $ex = new AlephRestfulException($replyText, $replyCode);
+            $ex->setXmlResponse($result);
+            throw $ex;
+        }
+        return $result;
+    }
+
+    /**
      * Perform an HTTP request.
      *
      * @param string $url    URL of request
@@ -271,9 +308,9 @@ class Aleph extends AlephBase
         }
 
         $result = null;
-        try { // DM - pridan parametr timeout=300
+	    try { // DM - pridan parametr timeout=300
+		    $this->httpService->setDefaultAdapter(new Curl);
             $client = $this->httpService->createClient($url, $method, '300');
-//            $client->setMethod($method);
             if ($body != null) {
                 $client->setRawBody($body);
             }
