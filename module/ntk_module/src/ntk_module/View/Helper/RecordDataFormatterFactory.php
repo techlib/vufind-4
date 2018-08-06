@@ -104,6 +104,7 @@ class RecordDataFormatterFactory extends RecordDataFormatterFactoryBase
             'Related Items', 'getAllRecordLinks', 'data-allRecordLinks.phtml'
         );
         $spec->setTemplateLine('Tags', true, 'data-tags.phtml');
+        $spec->setTemplateLine('EOD', 'isEOD', 'data-eod.phtml');
         return $spec->getArray();
     }
 
