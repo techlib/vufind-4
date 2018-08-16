@@ -38,6 +38,7 @@
 namespace ntk_module\ILS\Driver;
 use VuFind\ILS\Driver\Aleph as AlephBase, VuFind\Exception\ILS as ILSException;
 use Zend\Http\Client\Adapter\Curl;
+use VuFind\ILS\Driver\AlephRestfulException;
 
 require_once 'AlephTables.php';
 
