@@ -310,7 +310,7 @@ class Aleph extends AlephBase
 
         $result = null;
 	    try { // DM - pridan parametr timeout=300
-		    $this->httpService->setDefaultAdapter(new Curl);
+		    //$this->httpService->setDefaultAdapter(new Curl);
             $client = $this->httpService->createClient($url, $method, '300');
             if ($body != null) {
                 $client->setRawBody($body);
