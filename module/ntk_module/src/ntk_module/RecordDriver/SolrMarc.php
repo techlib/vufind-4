@@ -99,7 +99,7 @@ class SolrMarc extends SolrMarcBase
         foreach ($eiz_info as $info_eiz) {
                 $info_text = $info_eiz->getSubfield('a'); // Marc pole 530a
         }
-        return $info_text->getData();
+        return isset($info_text) ? $info_text->getData() : null;
     }
 
     /**
@@ -491,5 +491,15 @@ class SolrMarc extends SolrMarcBase
         }
 
         return $matches;
+    }
+
+    // Informace o prejiti tistene formy casopisu do elektronicke podoby.
+    public function isStandard()
+    {
+        if ($this->fields['format'][0] == "Standard(format)"){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
