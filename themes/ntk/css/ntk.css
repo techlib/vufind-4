@@ -72,3 +72,7 @@ span.available-status {
         width:143px;
     }
 }
+
+span.infotext{
+    font-weight:bold;
+}

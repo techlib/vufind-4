@@ -48,7 +48,9 @@
 <? endif; ?>
 <?
         if ((isset($holdings['']['items'][0]['eiz']) && $holdings['']['items'][0]['eiz'] == 1) || ($this->driver->isStandard())){
+            ?><span class="infotext"><?
             print_r($this->transEsc($this->driver->infoText()));
+            ?></span><br><br><?
         }
 ?>
 <? if (!empty($urls) || $openUrlActive): ?>
