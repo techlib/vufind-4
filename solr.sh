@@ -43,7 +43,7 @@ usage()
 #if [ -z "$VUFIND_HOME" ]
 #then
   #VUFIND_HOME=$(dirname "$0")
-  VUFIND_HOME=/var/www/vufind.4
+  VUFIND_HOME=/var/www/vufind
 #fi
 
 if [ -z "$SOLR_HOME" ]
@@ -68,7 +68,7 @@ fi
 
 if [ -z "$SOLR_PORT" ]
 then
-  SOLR_PORT="8484"
+  SOLR_PORT="8080"
 fi
 
 if [ -z "$SOLR_ADDITIONAL_START_OPTIONS" ]
