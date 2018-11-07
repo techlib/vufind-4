@@ -121,8 +121,8 @@
         <? endif; ?>
     <? endforeach;?>
 </div>
-<table class="table">
-    <tbody>
+<table class="table" id="no-more-tables">
+    <thead>
     <tr>
         <th>
             <?=$this->transEsc('Status')?>
@@ -143,6 +143,8 @@
             <?=$this->transEsc('Old Callnumber')?>
         </th>
     </tr>
+    </thead>
+    <tbody>
     <? foreach ($holdings as $holding): ?>
       <? foreach ($holding['items'] as $row): ?>
         <?
@@ -153,7 +155,7 @@
         ?>
         <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
           <tr vocab="http://schema.org/" typeof="Offer">
-            <td>
+            <td data-title="<?=$this->transEsc('Status')?>">
               <? if ($row['reserve'] == "Y"): ?>
                 <link property="availability" href="http://schema.org/InStoreOnly" />
                 <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
@@ -220,10 +222,10 @@
                 <link property="itemOffered" href="#record" />
             </td>
             <!-- dalsi sloupce tabulky jednotek -->
-            <td>    <!-- Sublibrary -->
+            <td data-title="<?=$this->transEsc('Sublibrary')?>">    <!-- Sublibrary -->
                     <?=$this->transEsc($row['sub_lib_desc'])?>
             </td>
-            <td>    <!-- Description & Notes -->
+            <td data-title="<?=$this->transEsc('Description')?>">    <!-- Description & Notes -->
                 <?=$this->escapeHtml($row['description'])?>
                 <? if (isset($row['notes'])): ?>
                   <div class="item-notes">
@@ -233,7 +235,7 @@
                   </div>
                 <? endif; ?>
             </td>
-            <td>    <!-- Location -->
+            <td data-title="<?=$this->transEsc('Location')?>">    <!-- Location -->
 
             <? if ($row['sub_lib_desc'] == 'VŠCHT ústavy'): ?>
                 <?if ($this->layout()->userLang === 'cs'):?>
@@ -278,10 +280,10 @@
 
                 </a>
             </td>
-            <td>    <!-- LCC Callnumber -->
+            <td data-title="<?=$this->transEsc('LCC Callnumber')?>">    <!-- LCC Callnumber -->
                     <?=$this->escapeHtml($row['callnumber_second'])?>
             </td>
-            <td>    <!-- Old Callnumber -->
+            <td data-title="<?=$this->transEsc('Old Callnumber')?>">    <!-- Old Callnumber -->
                     <?=$this->escapeHtml($row['callnumber'])?>
             </td>
           </tr>
